@@ -13486,13 +13486,6 @@
     "io.k8s.api.policy.v1beta1.FSGroupStrategyOptions": {
       "description": "FSGroupStrategyOptions defines the strategy type and options used to create the strategy.",
       "properties": {
-        "ranges": {
-          "description": "ranges are the allowed ranges of fs groups.  If you would like to force a single fs group then supply a single range with the same start and end. Required for MustRunAs.",
-          "items": {
-            "$ref": "#/definitions/io.k8s.api.policy.v1beta1.IDRange"
-          },
-          "type": "array"
-        },
         "rule": {
           "description": "rule is the strategy that will dictate what FSGroup is used in the SecurityContext.",
           "type": "string",
@@ -13511,6 +13504,49 @@
       "required": [
         "rule"
       ],
+      "dependencies": {
+        "rule": {
+          "oneOf": [
+            {
+              "properties": {
+                "rule": {
+                  "enum": [
+                    "MustRunAs",
+                    "MayRunAs"
+                  ]
+                },
+                "ranges": {
+                  "description": "ranges are the allowed ranges of fs groups.  If you would like to force a single fs group then supply a single range with the same start and end. Required for MustRunAs and MayRunAs.",
+                  "items": {
+                    "$ref": "#/definitions/io.k8s.api.policy.v1beta1.IDRange"
+                  },
+                  "minItems": 1,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "ranges"
+              ]
+            },
+            {
+              "properties": {
+                "rule": {
+                  "enum": [
+                    "RunAsAny"
+                  ]
+                },
+                "ranges": {
+                  "description": "ranges are the allowed ranges of fs groups.  If you would like to force a single fs group then supply a single range with the same start and end. Required for MustRunAs and MayRunAs.",
+                  "items": {
+                    "$ref": "#/definitions/io.k8s.api.policy.v1beta1.IDRange"
+                  },
+                  "type": "array"
+                }
+              }
+            }
+          ]
+        }
+      },
       "type": "object"
     },
     "io.k8s.api.policy.v1beta1.HostPortRange": {
